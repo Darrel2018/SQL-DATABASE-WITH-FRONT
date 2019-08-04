@@ -1,73 +1,127 @@
 package front;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-
 /**
  *  
  * This program is an attempt to create an SQL database and connect it to a front end application
  *  
  *  @author Darrel2018
- *  @version 0.1
+ *  @version 0.2
  *  @since 8/3/2019
  */
 
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 
 public class FRONT extends Canvas {
 	private static final long serialVersionUID = 1L;
 
 	private JFrame frame;
-	private JPanel sidePanel, mPanel;
 	
 	private static String title = "SQL Database";
 	private static int width = 800, height = 600;
 	
+	// Constructor
 	public FRONT(){
 		frame = new JFrame();
+		frame.setLayout(null);
 		
 		createView();
 	}
 	
+	// adds GUI components to JFrame
 	public void createView(){
-		frame.setLayout(null);
 		frame.add(createSidePanel());
 		frame.add(createMainPanel());
 	}
 	
+	// creates main panel component
 	private JPanel createMainPanel(){
-		mPanel = new JPanel();
+		JPanel panel = new JPanel();
 		
-		mPanel.setLayout(null);
-		mPanel.setSize(new Dimension(width, height));
-		mPanel.setBackground(setColor(208, 208, 208));
+		panel.setLayout(null);
+		panel.setSize(new Dimension(width, height));
+		panel.setBackground(setColor(208, 208, 208));
 		
-		return mPanel;
+		panel.add(createDataTable());
+		
+		return panel;
 	}
 	
+	private JScrollPane createDataTable(){
+		
+		String[] columnNames = {"Name", "AGE", "Gender", "Married"};
+		String[][] data = {
+				
+				{"Jack", "23", "Male", "No"},
+				{"Emily", "20", "Female", "Yes"},
+				{"Mack", "32", "Male", "Yes"}
+				
+		};
+		
+		JTable table = new JTable(data, columnNames);
+		table.setPreferredScrollableViewportSize(new Dimension(400, 200));
+		table.setFillsViewportHeight(true);
+		
+		JScrollPane pane = new JScrollPane(table);
+		pane.setBounds(0, 0, 575, 601);
+		
+		return pane;
+	}
+	
+	// creates side panel component
 	private JPanel createSidePanel(){
-		JPanel sidePanel = new JPanel();
+		JPanel panel = new JPanel();
 		JSeparator sep = new JSeparator();
 		
 		
-		sidePanel.setLayout(null);
-		sidePanel.setSize(new Dimension(width - 570, height));
-		sidePanel.setLocation(570, 0);
-		sidePanel.setBackground(setColor(0, 0, 153));
+		panel.setLayout(null);
+		panel.setSize(new Dimension(570, height));
+		panel.setLocation(570, 0);
+		panel.setBackground(setColor(0, 0, 153));
 		
 		sep.setBounds(10, 70, 205, 10);
+		sep.setForeground(setColor(255, 153, 0));
+		sep.setBackground(setColor(255, 153, 0));
 		
-		sidePanel.add(sep);
-		sidePanel.add(createTextLabel("SQL-Database", new Font("Segoe UI", 0, 24), setColor(255, 255, 255), 40, 7, 150));
+		panel.add(sep);
+		panel.add(createTextLabel("SQL-Database", new Font("Segoe UI", 0, 24), setColor(255, 153, 0), 40, 7, 150));
+		panel.add(createSidePanelButton(0, 120, setColor(15, 15, 183), "res\\images\\viewdatabase.png", "View Database", 100));
+		panel.add(createSidePanelButton(0, 160, setColor(15, 15, 183), "res\\images\\addEntry.png", "Add Entry", 100));
+		panel.add(createSidePanelButton(0, 200, setColor(15, 15, 183), "res\\images\\editEntry.png", "Edit Entry", 100));
+		panel.add(createSidePanelButton(0, 240, setColor(15, 15, 183), "res\\images\\deleteEntry.png", "Delete Entry", 100));
 		
-		return sidePanel;
+		return panel;
 	}
 	
+	// creates side panel buttons
+	private JPanel createSidePanelButton(int x, int y, Color color, String imgPath, String text, int textSize){
+		JPanel panel = new JPanel();
+		
+		panel.setLayout(null);
+		panel.setBounds(x, y, 230, 40);
+		panel.setBackground(color);
+		
+		JLabel imgLabel = new JLabel();
+		imgLabel.setIcon(new ImageIcon(imgPath));
+		imgLabel.setBounds(15, -5, 50, 50);
+		
+		panel.add(createTextLabel(text, new Font("Segoe UI", 0, 15), setColor(255, 153, 0), 60, -7, textSize));
+		panel.add(imgLabel);
+		
+		return panel;
+	}
+	
+	// creates a label component
 	private JLabel createTextLabel(String text, Font font, Color color, int x, int y, int textLength){
 		JLabel label = new JLabel();
 		
@@ -79,11 +133,13 @@ public class FRONT extends Canvas {
 		return label;
 	}
 	
+	// allows for easy use of RGB color scheme
 	public Color setColor(int r, int g, int b){
 		Color color = new Color(r, g, b);
 		return color;
 	}
 	
+	//----====MAIN====----
 	public static void main(String[] args){
 		
 		FRONT front = new FRONT();
