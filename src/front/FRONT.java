@@ -5,7 +5,7 @@ package front;
  * This program is an attempt to create an SQL database and connect it to a front end application
  *  
  *  @author Darrel2018
- *  @version 0.2
+ *  @version 0.5
  *  @since 8/3/2019
  */
 
@@ -13,14 +13,17 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTable;
+
+import dataTable.DataTable;
+
 
 public class FRONT extends Canvas {
 	private static final long serialVersionUID = 1L;
@@ -30,9 +33,13 @@ public class FRONT extends Canvas {
 	private static String title = "SQL Database";
 	private static int width = 800, height = 600;
 	
+	private JPanel prevPanel, mPanel, sidePanel;
+	private DataTable table;
+	
 	// Constructor
 	public FRONT(){
 		frame = new JFrame();
+		table = new DataTable();
 		frame.setLayout(null);
 		
 		createView();
@@ -41,66 +48,105 @@ public class FRONT extends Canvas {
 	// adds GUI components to JFrame
 	public void createView(){
 		frame.add(createSidePanel());
-		frame.add(createMainPanel());
 	}
 	
 	// creates main panel component
 	private JPanel createMainPanel(){
-		JPanel panel = new JPanel();
+		mPanel = new JPanel();
 		
-		panel.setLayout(null);
-		panel.setSize(new Dimension(width, height));
-		panel.setBackground(setColor(208, 208, 208));
+		mPanel.setLayout(null);
+		mPanel.setSize(new Dimension(width, height));
+		mPanel.setBackground(setColor(208, 208, 208));
 		
-		panel.add(createDataTable());
+		mPanel.add(table.getDataTable());
 		
-		return panel;
-	}
-	
-	private JScrollPane createDataTable(){
-		
-		String[] columnNames = {"Name", "AGE", "Gender", "Married"};
-		String[][] data = {
-				
-				{"Jack", "23", "Male", "No"},
-				{"Emily", "20", "Female", "Yes"},
-				{"Mack", "32", "Male", "Yes"}
-				
-		};
-		
-		JTable table = new JTable(data, columnNames);
-		table.setPreferredScrollableViewportSize(new Dimension(400, 200));
-		table.setFillsViewportHeight(true);
-		
-		JScrollPane pane = new JScrollPane(table);
-		pane.setBounds(0, 0, 575, 601);
-		
-		return pane;
+		return mPanel;
 	}
 	
 	// creates side panel component
 	private JPanel createSidePanel(){
-		JPanel panel = new JPanel();
+		sidePanel = new JPanel();
 		JSeparator sep = new JSeparator();
 		
 		
-		panel.setLayout(null);
-		panel.setSize(new Dimension(570, height));
-		panel.setLocation(570, 0);
-		panel.setBackground(setColor(0, 0, 153));
+		sidePanel.setLayout(null);
+		sidePanel.setSize(new Dimension(570, height));
+		sidePanel.setLocation(570, 0);
+		sidePanel.setBackground(setColor(0, 0, 153));
 		
 		sep.setBounds(10, 70, 205, 10);
 		sep.setForeground(setColor(255, 153, 0));
 		sep.setBackground(setColor(255, 153, 0));
 		
-		panel.add(sep);
-		panel.add(createTextLabel("SQL-Database", new Font("Segoe UI", 0, 24), setColor(255, 153, 0), 40, 7, 150));
-		panel.add(createSidePanelButton(0, 120, setColor(15, 15, 183), "res\\images\\viewdatabase.png", "View Database", 100));
-		panel.add(createSidePanelButton(0, 160, setColor(15, 15, 183), "res\\images\\addEntry.png", "Add Entry", 100));
-		panel.add(createSidePanelButton(0, 200, setColor(15, 15, 183), "res\\images\\editEntry.png", "Edit Entry", 100));
-		panel.add(createSidePanelButton(0, 240, setColor(15, 15, 183), "res\\images\\deleteEntry.png", "Delete Entry", 100));
+		JPanel viewButton = createSidePanelButton(0, 120, setColor(15, 15, 183), "res\\images\\viewdatabase.png", "View Database", 100);
+		JPanel searchButton = createSidePanelButton(0, 160, setColor(15, 15, 183), "res\\images\\SearchEntry.png", "Search For Entry", 120);
+		JPanel addButton = createSidePanelButton(0, 200, setColor(15, 15, 183), "res\\images\\addEntry.png", "Add Entry", 100);
+		JPanel editButton = createSidePanelButton(0, 240, setColor(15, 15, 183), "res\\images\\editEntry.png", "Edit Entry", 100);
+		JPanel deleteButton = createSidePanelButton(0, 280, setColor(15, 15, 183), "res\\images\\deleteEntry.png", "Delete Entry", 100);
+		JPanel exitButton = createSidePanelButton(0, 480, setColor(15, 15, 183), "res\\images\\Exit.png", "Exit", 100);
 		
-		return panel;
+		addListeners(viewButton, 0);
+		addListeners(searchButton, 1);
+		addListeners(addButton, 2);
+		addListeners(editButton, 3);
+		addListeners(deleteButton, 4);
+		addListeners(exitButton, 5);
+		
+		sidePanel.add(sep);
+		sidePanel.add(createTextLabel("SQL-Database", new Font("Segoe UI", 0, 24), setColor(255, 153, 0), 40, 7, 150));
+		sidePanel.add(viewButton);
+		sidePanel.add(searchButton);
+		sidePanel.add(addButton);
+		sidePanel.add(editButton);
+		sidePanel.add(deleteButton);
+		sidePanel.add(exitButton);
+		
+		return sidePanel;
+	}
+	
+	// adds listeners to button panels
+	private void addListeners(JPanel panel, int button){
+		
+		panel.addMouseListener(new MouseAdapter() {
+			
+			public void mousePressed(MouseEvent e){
+				
+				if(prevPanel == null) prevPanel = new JPanel();
+				prevPanel.setBackground(setColor(15, 15, 183));
+				prevPanel = panel;
+				panel.setBackground(setColor(51, 51, 183));
+				
+				pressedButton(button);
+			}
+		});
+	}
+	
+	// checks which button was pressed
+	private void pressedButton(int button){
+		if(button == 0){
+			System.out.println("Pressed View Database");
+			frame.add(createMainPanel());
+			table.viewData();
+		}
+		else if(button == 1){
+			System.out.println("Pressed SearchEntry");
+			mPanel.removeAll();
+			mPanel.setBackground(setColor(255, 255, 255));
+			frame.repaint();
+		}
+		else if(button == 2){
+			System.out.println("Pressed addEntry");
+		}
+		else if(button == 3){
+			System.out.println("Pressed editEntry");
+		}
+		else if(button == 4){
+			System.out.println("Pressed deleteEntry");
+		}
+		else if(button == 5){
+			System.err.println("Exiting...");
+			System.exit(0);
+		}
 	}
 	
 	// creates side panel buttons
