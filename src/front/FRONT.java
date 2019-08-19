@@ -48,6 +48,7 @@ public class FRONT extends Canvas {
 	// adds GUI components to JFrame
 	public void createView(){
 		frame.add(createSidePanel());
+		frame.add(createMainPanel());
 	}
 	
 	// creates main panel component
@@ -56,7 +57,7 @@ public class FRONT extends Canvas {
 		
 		mPanel.setLayout(null);
 		mPanel.setSize(new Dimension(width, height));
-		mPanel.setBackground(setColor(208, 208, 208));
+		mPanel.setBackground(setColor(0, 0, 153));
 		
 		mPanel.add(table.getDataTable());
 		
@@ -125,14 +126,21 @@ public class FRONT extends Canvas {
 	private void pressedButton(int button){
 		if(button == 0){
 			System.out.println("Pressed View Database");
+			
+			mPanel.removeAll();
+			frame.repaint();
+			
+			frame.remove(mPanel);
 			frame.add(createMainPanel());
 			table.viewData();
 		}
 		else if(button == 1){
 			System.out.println("Pressed SearchEntry");
+			
 			mPanel.removeAll();
-			mPanel.setBackground(setColor(255, 255, 255));
 			frame.repaint();
+			
+			table.createSelectTab(this, mPanel);
 		}
 		else if(button == 2){
 			System.out.println("Pressed addEntry");
@@ -147,6 +155,14 @@ public class FRONT extends Canvas {
 			System.err.println("Exiting...");
 			System.exit(0);
 		}
+	}
+	
+	// repaints the mPanel and then adds the data table.
+	public void repaintMPanel(){
+		mPanel.removeAll();
+		frame.repaint();
+		
+		mPanel.add(table.getDataTable());
 	}
 	
 	// creates side panel buttons
@@ -168,7 +184,7 @@ public class FRONT extends Canvas {
 	}
 	
 	// creates a label component
-	private JLabel createTextLabel(String text, Font font, Color color, int x, int y, int textLength){
+	public JLabel createTextLabel(String text, Font font, Color color, int x, int y, int textLength){
 		JLabel label = new JLabel();
 		
 		label.setText(text);
