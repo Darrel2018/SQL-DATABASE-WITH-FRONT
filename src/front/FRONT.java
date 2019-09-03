@@ -5,7 +5,7 @@ package front;
  * This program is an attempt to create an SQL database and connect it to a front end application
  *  
  *  @author Darrel2018
- *  @version 0.5
+ *  @version 0.9
  *  @since 8/3/2019
  */
 
@@ -28,7 +28,7 @@ import dataTable.DataTable;
 public class FRONT extends Canvas {
 	private static final long serialVersionUID = 1L;
 
-	private JFrame frame;
+	public JFrame frame;
 	
 	private static String title = "SQL Database";
 	private static int width = 800, height = 600;
@@ -144,9 +144,19 @@ public class FRONT extends Canvas {
 		}
 		else if(button == 2){
 			System.out.println("Pressed addEntry");
+			
+			mPanel.removeAll();
+			frame.repaint();
+			
+			table.createAddEntryTab(this, mPanel);
 		}
 		else if(button == 3){
 			System.out.println("Pressed editEntry");
+			
+			mPanel.removeAll();
+			frame.repaint();
+			
+			table.createEditEntryTab(this, mPanel);
 		}
 		else if(button == 4){
 			System.out.println("Pressed deleteEntry");
