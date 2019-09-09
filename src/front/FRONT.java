@@ -5,7 +5,7 @@ package front;
  * This program is an attempt to create an SQL database and connect it to a front end application
  *  
  *  @author Darrel2018
- *  @version 0.9
+ *  @version 1.0
  *  @since 8/3/2019
  */
 
