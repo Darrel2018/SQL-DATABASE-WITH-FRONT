@@ -152,6 +152,13 @@ public class DataTable {
 				
 				System.out.println("Edited Record!");
 			}
+			else if(sec == 4){
+				
+				String strEdit = SQLC;
+				stmt.executeUpdate(strEdit);
+				
+				System.out.println("Deleted Record!");
+			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -469,6 +476,8 @@ public class DataTable {
 	public void createEditEntryTab(FRONT fnt, JPanel mPanel){
 		
 		int dis = 40, compCount;
+		submit_edit = false;
+		submitButtonClicked = 0;
 		
 		JPanel button_submit = createButton("Submit", "Click Button", fnt, 238, 250);
 		JTextField field_name = createTextField("Enter Name", dis, 150, 120, 40);
@@ -477,7 +486,7 @@ public class DataTable {
 		JTextField field_married = createTextField("Enter Married", dis + 125*3, 150, 120, 40);
 		
 		mPanel.add(createHeaderPanel(mPanel.getWidth(), fnt, "Edit Database Entry", 
-				"You must first find the entry you wish to edit in the database"));
+				"Edit a Record by Entering a Name, Age, Gender, or if Married down below"));
 		
 		mPanel.add(field_name);
 		mPanel.add(field_age);
@@ -591,6 +600,198 @@ public class DataTable {
 		mPanel.add(button_submit);
 	}
 	
+	private String getDeleteSQL(String name, String age, String gender, String married){
+		
+		boolean first_column = false;
+		String SQLstring = "Delete from datatable";
+		
+		// name
+		if(!name.equalsIgnoreCase("enter name") && !name.equalsIgnoreCase("")){
+			
+			if(!first_column){
+				first_column = true;
+				
+				SQLstring += " where name = '" + name + "'";
+			}
+			else {
+				SQLstring += " AND name = '" + name + "'";
+			}
+		}
+		
+		// age
+		if(!age.equalsIgnoreCase("enter age") && !age.equalsIgnoreCase("")){
+			
+			if(!first_column){
+				first_column = true;
+				
+				SQLstring += " where age = " + age;
+			}
+			else {
+				SQLstring += " AND age = " + age;
+			}
+		}
+		
+		// gender
+		if(!gender.equalsIgnoreCase("enter gender") && !gender.equalsIgnoreCase("")){
+			
+			if(!first_column){
+				first_column = true;
+				
+				SQLstring += " where gender = '" + gender + "'";
+			}
+			else {
+				SQLstring += " AND gender = '" + gender + "'";
+			}
+		}
+		
+		// married
+		if(!married.equalsIgnoreCase("enter married") && !married.equalsIgnoreCase("")){
+			
+			if(!first_column){
+				first_column = true;
+				
+				SQLstring += " where married = '" + married + "'";
+			}
+			else {
+				SQLstring += " AND married = '" + married + "'";
+			}
+		}
+		
+		System.out.println(SQLstring);
+		return SQLstring;
+	}
+	
+	// creates the delete tab
+	public void createDeleteTab(FRONT fnt, JPanel mPanel){
+		
+		int dis = 40, compCount;
+		submit_edit = false;
+		submitButtonClicked = 0;
+		
+		JPanel button_submit = createButton("Submit", "Click Button", fnt, 238, 250);
+		JTextField field_name = createTextField("Enter Name", dis, 150, 120, 40);
+		JTextField field_age = createTextField("Enter Age", dis + 125, 150, 120, 40);
+		JTextField field_gender = createTextField("Enter Gender", dis + 125*2, 150, 120, 40);
+		JTextField field_married = createTextField("Enter Married", dis + 125*3, 150, 120, 40);
+		
+		mPanel.add(createHeaderPanel(mPanel.getWidth(), fnt, "Delete Record",
+				"Delete a Record by Entering a Name, Age, Gender, or if Married down below"));
+		
+		mPanel.add(field_name);
+		mPanel.add(field_age);
+		mPanel.add(field_gender);
+		mPanel.add(field_married);
+		
+		compCount = mPanel.getComponentCount()+1;
+		
+		button_submit.addMouseListener(new MouseAdapter() {
+			
+			public void mousePressed(MouseEvent e) {
+				button_submit.setBackground(setColor(51, 51, 183));
+			}
+			
+			public void mouseReleased(MouseEvent e){
+				button_submit.setBackground(setColor(15, 15, 183));
+				
+				if(submit_edit && submitButtonClicked == 0){
+					
+					String SQL = getDeleteSQL(field_name.getText(), field_age.getText(),
+							field_gender.getText(), field_married.getText());
+					
+					deleteData(SQL);
+					
+					if(compCount < mPanel.getComponentCount()){
+						mPanel.remove(mPanel.getComponentCount()-1);
+					}
+					
+					JLabel Succlable = fnt.createTextLabel("Success: the record was Deleted!", 
+							new Font("Segoe UI", 0, 15), setColor(255, 153, 0), 180, 200, 500);
+					
+					mPanel.add(Succlable);
+					fnt.frame.repaint();
+					
+					field_name.setBorder(BorderFactory.createLineBorder(setColor(255, 153, 0)));
+					field_age.setBorder(BorderFactory.createLineBorder(setColor(255, 153, 0)));
+					field_gender.setBorder(BorderFactory.createLineBorder(setColor(255, 153, 0)));
+					field_married.setBorder(BorderFactory.createLineBorder(setColor(255, 153, 0)));
+					
+					field_name.setText("Enter Name");
+					field_age.setText("Enter Age");
+					field_gender.setText("Enter Gender");
+					field_married.setText("Enter Married");
+					
+					submitButtonClicked++;
+				}
+				
+				if(!submit_edit){
+					selectData(getSQLString(field_name.getText(), field_age.getText(), 
+							field_gender.getText(), field_married.getText()));
+				}
+				
+				if(rowCount <= 0 && !submit_edit){
+					
+					if(compCount < mPanel.getComponentCount()){
+						mPanel.remove(mPanel.getComponentCount()-1);
+					}
+					
+					JLabel ERRORlable = fnt.createTextLabel("ERROR: Zero records found!\n Please try again.", 
+							new Font("Segoe UI", 0, 15), setColor(255, 153, 0), 120, 200, 500);
+					
+					mPanel.add(ERRORlable);
+					fnt.frame.repaint();
+				}
+				
+				if(rowCount >= 1 && !submit_edit){
+					
+					if(rowCount >= 2){
+						
+						if(compCount < mPanel.getComponentCount()){
+							mPanel.remove(mPanel.getComponentCount()-1);
+						}
+						
+						JLabel ERRORlable = fnt.createTextLabel("ERROR: more than one record found!\n Please try again.", 
+								new Font("Segoe UI", 0, 15), setColor(255, 153, 0), 120, 200, 500);
+						
+						mPanel.add(ERRORlable);
+						fnt.frame.repaint();
+					}
+					
+					if(rowCount == 1 && !submit_edit){
+						
+						if(compCount < mPanel.getComponentCount()){
+							mPanel.remove(mPanel.getComponentCount()-1);
+						}
+						
+						JLabel infoLable = fnt.createTextLabel("Found 1 Record! Click Submit again to delete!", 
+								new Font("Segoe UI", 0, 15), setColor(255, 153, 0), 150, 200, 500);
+						
+						field_name.setText(name);
+						field_age.setText("" + age);
+						field_gender.setText(gender);
+						field_married.setText(married);
+						
+						field_name.setBorder(BorderFactory.createLineBorder(setColor(0, 255, 0)));
+						field_age.setBorder(BorderFactory.createLineBorder(setColor(0, 255, 0)));
+						field_gender.setBorder(BorderFactory.createLineBorder(setColor(0, 255, 0)));
+						field_married.setBorder(BorderFactory.createLineBorder(setColor(0, 255, 0)));
+						
+						submit_edit = true;
+						
+						mPanel.add(infoLable);
+						fnt.frame.repaint();
+					}
+				}
+				
+				if(submitButtonClicked > 0){
+					submit_edit = false;
+					submitButtonClicked = 0;
+				}
+			}
+		});
+		
+		mPanel.add(button_submit);
+	}
+	
 	// returns dataTable
 	public JScrollPane getDataTable(){
 		return createDataTable();
@@ -621,5 +822,11 @@ public class DataTable {
 	private void editData(String SQL){
 		removeRows();
 		getSQLdata(SQL, 3);
+	}
+	
+	// deletes data from database
+	private void deleteData(String SQL){
+		removeRows();
+		getSQLdata(SQL, 4);
 	}
 }

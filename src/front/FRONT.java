@@ -160,6 +160,11 @@ public class FRONT extends Canvas {
 		}
 		else if(button == 4){
 			System.out.println("Pressed deleteEntry");
+			
+			mPanel.removeAll();
+			frame.repaint();
+			
+			table.createDeleteTab(this, mPanel);
 		}
 		else if(button == 5){
 			System.err.println("Exiting...");
